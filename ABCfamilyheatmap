@@ -1,0 +1,52 @@
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Define the ABC gene sets for each category
+data = {
+    "Patient Intrinsic Chemoresistance": ["ABCA8", "ABCA9", "ABCA12", "ABCB1", "CFTR", "ABCC10"],
+    "Patient Acquired Chemoresistance": [
+        "ABCA1", "ABCA2", "ABCA5", "ABCA6", "ABCA7", "ABCA10", "ABCB1", "ABCB4", "ABCB5", "ABCB7", "ABCB11",
+        "ABCC2", "ABCC3", "ABCC5", "ABCC6", "ABCC8", "ABCC9", "ABCC10", "ABCC11", "ABCD2", "ABCE1", "ABCG1", "ABCG2", "ABCG5"
+    ],
+    "Patient Survival": ["ABCA1", "ABCA2", "ABCA8", "ABCB1", "ABCB5", "ABCB10", "ABCC2", "ABCC5", "ABCC9", "ABCC11", "ABCG1"],
+    "Cell Line Chemoresistance": [
+        "ABCA1", "ABCA12", "ABCA2", "ABCA3", "ABCA5", "ABCA7", "ABCB1", "ABCB10", "ABCB4", "ABCB5", "ABCB6", "ABCB7",
+        "ABCB8", "ABCB9", "ABCC1", "ABCC10", "ABCC11", "ABCC2", "ABCC3", "ABCC4", "ABCC6", "ABCD1", "ABCD3", "ABCD4", "ABCG4"
+    ]
+}
+
+# Get all unique genes
+conditions = list(data.keys())
+genes = sorted(set(g for gene_list in data.values() for g in gene_list))
+
+# Create binary matrix
+matrix = pd.DataFrame(0, index=genes, columns=conditions)
+for condition, gene_list in data.items():
+    matrix.loc[gene_list, condition] = 1
+
+# Transpose and sort by total
+matrix = matrix.T
+matrix["Total"] = matrix.sum(axis=1)
+matrix = matrix.sort_values("Total", ascending=False).drop(columns="Total")
+
+# Plot heatmap
+plt.figure(figsize=(16, 6))
+sns.set(style="whitegrid", font_scale=1.1)
+sns.heatmap(
+    matrix,
+    cmap="PuBuGn",
+    linewidths=0.5,
+    linecolor='gray',
+    cbar=True,
+    square=True,
+    annot=False
+)
+
+plt.title("ABC Gene Involvement Across Chemoresistance and Survival Categories", fontsize=16, weight='bold')
+plt.ylabel("Condition", fontsize=13, weight= 'bold')
+plt.xlabel("ABC Transporter Genes", fontsize=13, weight='bold')
+plt.xticks(rotation=90)
+plt.yticks(rotation=0)
+plt.tight_layout()
+plt.show()
