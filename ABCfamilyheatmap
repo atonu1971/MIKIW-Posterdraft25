@@ -1,3 +1,4 @@
+#This code is written in python. You can just copy and paste in your conda. Also if any package not installed, install it. 
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
